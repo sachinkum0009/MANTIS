@@ -1,0 +1,17 @@
+[project]
+name = "mantis"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "lerobot>=0.4.2",
+    "pyzmq>=27.1.0",
+]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+img_pub = "mantis.zmq.image_pub:main"
+img_sub = "mantis.zmq.image_sub:main"
