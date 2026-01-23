@@ -13,9 +13,8 @@ import os
 import websockets
 
 
-from mantis.controller_position import (
-    ControllerPositions, InvalidControllerData
-)
+from mantis.controller_position import ControllerPositions, InvalidControllerData
+from mantis.bi_teleop import BiTeleop
 from mantis.ik_planner import IkPlanner
 
 logger = logging.getLogger("web_stream")
@@ -62,6 +61,9 @@ class WebServer:
 
         # initialize ik_planner
         self.ik_planner = IkPlanner(URDF_PATH)
+        # initialize bi manual SO 101 arms
+        self.bi_teleop = BiTeleop()
+        self.bi_teleop.connect_robots()
 
     def register_controller_callback(self, callback):
         """
@@ -90,6 +92,34 @@ class WebServer:
                     # Parse and validate controller positions
                     try:
                         cp = ControllerPositions.from_json(message)
+                        if cp.left.trigger > 0.5:
+                            left_joint_pos = None
+                            right_joint_pos = None
+
+                            if cp.left.trigger > 0.5:
+                                left_raw = self.ik_planner.compute_ik(cp.left.pose)
+                                if left_raw is not None:
+                                    left_joint_pos = {
+                                        f"joint{i+1}": float(v)
+                                        for i, v in enumerate(left_raw)
+                                    }
+
+                            if cp.right.trigger > 0.5:
+                                right_raw = self.ik_planner.compute_ik(cp.right.pose)
+                                if right_raw is not None:
+                                    right_joint_pos = {
+                                        f"joint{i+1}": float(v)
+                                        for i, v in enumerate(right_raw)
+                                    }
+
+                            # If no valid joint positions were computed, skip teleop
+                            if left_joint_pos is None and right_joint_pos is None:
+                                continue
+
+                            self.bi_teleop.teleop_robots(
+                                left_joint_pos, right_joint_pos
+                            )
+
                     except InvalidControllerData as exc:
                         print(f"Invalid controller data: {exc}")
                         continue
@@ -232,7 +262,9 @@ class WebServer:
                     pass
 
     def run(self):
-        """Convenience synchronous runner that blocks until stopped (KeyboardInterrupt)."""
+        """
+        Convenience synchronous runner that blocks until stopped (KeyboardInterrupt).
+        """
         try:
             asyncio.run(self.start())
         except KeyboardInterrupt:

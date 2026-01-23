@@ -1,7 +1,5 @@
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 from lerobot.cameras.configs import CameraConfig
-from lerobot.datasets.lerobot_dataset import LeRobotDataset
-from lerobot.datasets.utils import hw_to_dataset_features
 from lerobot.teleoperators.so101_leader import SO101LeaderConfig, SO101Leader
 from lerobot.robots.so101_follower import SO101FollowerConfig, SO101Follower
 

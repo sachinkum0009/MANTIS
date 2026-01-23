@@ -18,5 +18,6 @@ def main():
         # Send reply back to client
         socket.send(b"World")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
