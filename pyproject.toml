@@ -23,5 +23,4 @@ dev = [
 ]
 
 [project.scripts]
-img_pub = "mantis.zmq.image_pub:main"
-img_sub = "mantis.zmq.image_sub:main"
+server = "mantis.scripts.web_stream:main"
