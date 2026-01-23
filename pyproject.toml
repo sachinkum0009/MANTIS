@@ -5,13 +5,20 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "ikpy>=3.4.2",
     "lerobot>=0.4.2",
+    "pathlib>=1.0.1",
     "pyzmq>=27.1.0",
     "websockets>=16.0",
 ]
 
 [tool.uv]
 package = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
 
 [project.scripts]
 img_pub = "mantis.zmq.image_pub:main"
