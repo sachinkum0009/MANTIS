@@ -9,7 +9,8 @@ class InvalidControllerData(ValueError):
 
 @dataclass
 class Pose:
-    """Represent a 3D pose with x, y, and z coordinates.
+    """
+    Represent a 3D pose with x, y, and z coordinates.
 
     Attributes:
         x (float): X-coordinate.
@@ -76,6 +77,16 @@ class Pose:
 
 @dataclass
 class ControllerState:
+    """
+    Represents the Controller State
+
+    Attributes:
+        grip: float
+        trigger: float
+        valid: bool
+        pose: Pose
+    """
+
     grip: float
     trigger: float
     valid: bool
@@ -96,6 +107,15 @@ class ControllerState:
 
 @dataclass
 class ControllerPositions:
+    """
+    Represents the ControllerPositions
+
+    Attributes:
+        left: ControllerState
+        right: ControllerState
+        type: str = "controller_positions"
+    """
+
     left: ControllerState
     right: ControllerState
     type: str = "controller_positions"
