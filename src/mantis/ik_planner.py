@@ -17,6 +17,6 @@ class IkPlanner:
     def __init__(self, urdf_path: Path):
         self.urdf_chain = Chain.from_urdf_file(urdf_path.absolute())
 
-    def compute_ik(self, pose: Pose) -> list[float]:
+    def compute_ik(self, pose: Pose) -> dict[str, float]:
         joint_positions = self.urdf_chain.inverse_kinematics(pose.get_pose())
-        return joint_positions
+        return {f"joint{i+1}": float(v) for i, v in enumerate(joint_positions)}

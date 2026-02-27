@@ -5,6 +5,9 @@ Bi Teleop script to control both SO 101 robots
 from lerobot.cameras.configs import CameraConfig
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 from lerobot.robots.so101_follower import SO101FollowerConfig, SO101Follower
+from mantis.controller_position import Pose
+from mantis.ik_planner import IkPlanner
+from pathlib import Path
 
 
 class BiTeleop:
@@ -31,6 +34,8 @@ class BiTeleop:
             port="/dev/ttyUSB1", id="right_robot_arm", cameras=right_camera_config
         )
         self._right_robot = SO101Follower(right_robot_config)
+        urdf_path = Path("/home/asus/backup/zzzzz/isaac/MANTIS/urdf/so_arm101.urdf")
+        self._ik_planner = IkPlanner(urdf_path)
 
     def connect_robots(self):
         """Connect both robots"""
@@ -50,3 +55,9 @@ class BiTeleop:
         self._left_robot.send_action(left_action)
         self._right_robot.send_action(right_action)
         print(left_observation, right_observation)
+
+    def send_pose(self, left_pose: Pose, right_pose: Pose):
+        """Send pose to both robots"""
+        left_joint_val = self._ik_planner.compute_ik(left_pose)
+        right_joint_val = self._ik_planner.compute_ik(right_pose)
+        self.teleop_robots(left_joint_val, right_joint_val)
