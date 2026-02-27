@@ -61,6 +61,10 @@ class Pose:
     x: float
     y: float
     z: float
+    ox: float = 0.0
+    oy: float = 0.0
+    oz: float = 0.0
+    ow: float = 1.0
 
     @classmethod
     def from_dict(cls, data: Dict[str, float]) -> "Pose":
@@ -68,11 +72,15 @@ class Pose:
             x=float(data["x"]),
             y=float(data["y"]),
             z=float(data["z"]),
+            ox=float(data.get("ox", 0.0)),
+            oy=float(data.get("oy", 0.0)),
+            oz=float(data.get("oz", 0.0)),
+            ow=float(data.get("ow", 1.0)),
         )
 
     @classmethod
     def get_pose(cls) -> list[float]:
-        return [cls.x, cls.y, cls.z]
+        return [cls.x, cls.y, cls.z, cls.ox, cls.oy, cls.oz, cls.ow]
 
 
 @dataclass
