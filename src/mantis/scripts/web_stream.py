@@ -6,12 +6,13 @@ Streams a video file over WebSocket
 import asyncio
 import base64
 import cv2
+from dataclasses import dataclass
+import draccus
 import logging
 from pathlib import Path
 import sys
 import os
 import websockets
-
 
 from mantis.controller_position import ControllerPositions, InvalidControllerData
 from mantis.bi_teleop import BiTeleop
@@ -35,22 +36,20 @@ class WebServer:
 
     def __init__(
         self,
-        video_source: str | None = None,
-        host: str | None = None,
-        port: int | None = None,
-        jpeg_quality: int | None = None,
-        target_fps: int | None = None,
-        resize_width: int | None = None,
+        video_source: str,
+        host: str,
+        port: int,
+        jpeg_quality: int,
+        target_fps: int,
+        resize_width: int,
     ):
         # Use module-level defaults when caller doesn't provide values
-        self.video_source = video_source if video_source is not None else VIDEO_FILE
-        self.host = host if host is not None else HOST
-        self.port = port if port is not None else PORT
-        self.jpeg_quality = int(
-            jpeg_quality if jpeg_quality is not None else JPEG_QUALITY
-        )
-        self.target_fps = int(target_fps if target_fps is not None else TARGET_FPS)
-        self.resize_width = resize_width if resize_width is not None else RESIZE_WIDTH
+        self.video_source = video_source
+        self.host = host
+        self.port = port
+        self.jpeg_quality = jpeg_quality
+        self.target_fps = target_fps
+        self.resize_width = resize_width
 
         self._clients: set = set()
         self._clients_lock = asyncio.Lock()
@@ -93,7 +92,6 @@ class WebServer:
                     try:
                         cp = ControllerPositions.from_json(message)
                         if cp.left.trigger > 0.5:
-
                             if cp.left.trigger > 0.5 and cp.right.trigger > 0.5:
                                 self.bi_teleop.send_pose(cp.left.pose, cp.right.pose)
 
@@ -260,18 +258,27 @@ class WebServer:
             pass
 
 
-# Configuration
-VIDEO_FILE = "test_video.mp4"  # Video file to stream
-PORT = 8765
-HOST = "0.0.0.0"  # Listen on all interfaces
-JPEG_QUALITY = 70  # 1-100, lower = smaller file, lower quality
-TARGET_FPS = 30
-RESIZE_WIDTH = 640  # Resize to this width (maintains aspect ratio)
+@dataclass
+class WebServerConfig:
+    video_source: str = "test_video.mp4"
+    host: str = "0.0.0.0"
+    port: int = 8765
+    jpeg_quality = 70
+    target_fps = 30
+    resize_width = 640
 
 
-def main():
+@draccus.wrap()
+def main(cfg: WebServerConfig):
     """Construct and run the WebServer (blocking)."""
-    server = WebServer()
+    server = WebServer(
+        video_source=cfg.video_source,
+        host=cfg.host,
+        port=cfg.port,
+        jpeg_quality=cfg.jpeg_quality,
+        target_fps=cfg.target_fps,
+        resize_width=cfg.resize_width,
+    )
     server.run()
 
 
