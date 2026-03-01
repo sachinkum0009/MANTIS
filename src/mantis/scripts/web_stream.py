@@ -93,33 +93,9 @@ class WebServer:
                     try:
                         cp = ControllerPositions.from_json(message)
                         if cp.left.trigger > 0.5:
-                            # left_joint_pos = {}
-                            # right_joint_pos = {}
 
                             if cp.left.trigger > 0.5 and cp.right.trigger > 0.5:
                                 self.bi_teleop.send_pose(cp.left.pose, cp.right.pose)
-                            #     left_raw = self.ik_planner.compute_ik(cp.left.pose)
-                            #     if left_raw is not None:
-                            #         left_joint_pos = {
-                            #             f"joint{i+1}": float(v)
-                            #             for i, v in enumerate(left_raw)
-                            #         }
-
-                            # if cp.right.trigger > 0.5:
-                            #     right_raw = self.ik_planner.compute_ik(cp.right.pose)
-                            #     if right_raw is not None:
-                            #         right_joint_pos = {
-                            #             f"joint{i+1}": float(v)
-                            #             for i, v in enumerate(right_raw)
-                            #         }
-
-                            # # If no valid joint positions were computed, skip teleop
-                            # if not left_joint_pos and not right_joint_pos:
-                            #     continue
-
-                            # self.bi_teleop.teleop_robots(
-                            #     left_joint_pos, right_joint_pos
-                            # )
 
                     except InvalidControllerData as exc:
                         print(f"Invalid controller data: {exc}")
