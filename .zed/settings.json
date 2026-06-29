@@ -1,0 +1,29 @@
+{
+    "file_scan_exclusions": [
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        ".git",
+        "__pycache__"
+    ],
+    "inlay_hints": {
+        "enabled": true,
+        "show_type_hints": true,
+        "show_parameter_hints": true
+    },
+    "languages": {
+        "Python": {
+            "language_servers": ["basedpyright", "ruff", "!pyright"]
+        }
+    },
+    "lsp": {
+        "basedpyright": {
+            "settings": {
+                "python": {
+                    "pythonPath": ".venv/bin/python"
+                }
+            }
+        }
+    }
+}
